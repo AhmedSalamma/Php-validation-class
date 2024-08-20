@@ -1,0 +1,115 @@
+<?php
+
+namespace core\validation;
+
+/**
+ * Class Validation
+ * 
+ * Provides static methods for validating form input data. This class supports
+ * various validation rules such as email, required fields, numeric values, strings, and length constraints.
+ */
+class Validation 
+{
+    /**
+     * Array to hold validation error messages.
+     * 
+     * @var array
+     */
+    public static $errors = [];
+
+    /**
+     * Private constructor to prevent direct instantiation of the class.
+     * This class is designed to be used statically.
+     */
+    private function __construct(){}
+
+    /**
+     * Validates form fields based on provided rules.
+     * 
+     * @param array $fields An associative array where keys are field names and values are validation rules.
+     * The validation rules are separated by '|'.
+     * 
+     * Rules:
+     * - 'email': Validates if the field is a valid email address.
+     * - 'required': Ensures the field is not empty.
+     * - 'number': Ensures the field value is numeric.
+     * - 'string': Ensures the field value is a valid string.
+     * - 'min:INT': Validates that the field length is at least INT characters.
+     * - 'max:INT': Validates that the field length does not exceed INT characters.
+     * 
+     * @return void
+     */
+    public static function make(array $fields): void {
+        foreach ($fields as $key => $rules) {
+            $value = $_POST[$key] ?? '';
+
+            // Split rules by '|'
+            $rulesArray = explode("|", $rules);
+
+            // Check each rule
+            foreach ($rulesArray as $rule) {
+                // Check for min length
+                if (strpos($rule, 'min:') === 0) {
+                    $minLength = (int) substr($rule, 4);
+                    if (strlen($value) < $minLength) {
+                        self::$errors[$key] = "هذا الحقل يجب أن يحتوي على $minLength حرفًا على الأقل";
+                    }
+                }
+                // Check for max length
+                elseif (strpos($rule, 'max:') === 0) {
+                    $maxLength = (int) substr($rule, 4);
+                    if (strlen($value) > $maxLength) {
+                        self::$errors[$key] = "هذا الحقل يجب أن يحتوي على أقصى $maxLength حرفًا";
+                    }
+                }
+                // Check for email
+                elseif ($rule == 'email') {
+                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        self::$errors[$key] = "البريد الإلكتروني غير صالح";
+                    }
+                }
+                // Check for required
+                elseif ($rule == 'required') {
+                    if (empty($value)) {
+                        self::$errors[$key] = "هذا الحقل مطلوب";
+                    }
+                }
+                // Check for number
+                elseif ($rule == 'number') {
+                    if (!is_numeric($value)) {
+                        self::$errors[$key] = "هذا الحقل يجب أن يكون رقم";
+                    }
+                }
+                // Check for string
+                elseif ($rule == 'string') {
+                    if (!filter_var($value, FILTER_SANITIZE_STRING)) {
+                        self::$errors[$key] = "هذا الحقل يجب أن يكون نص";
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns validation error messages.
+     * 
+     * @param string|null $field Optional. The specific field to return an error message for.
+     * If null, returns all error messages.
+     * @return string The error messages as HTML.
+     */
+    public static function any(string $field = null): string {
+        if (is_null($field)) {
+            if (empty(self::$errors)) {
+                return 'ليس هناك أي أخطاء';
+            } else {
+                $errorMessages = '';
+                foreach (self::$errors as $error) {
+                    $errorMessages .= "<div style='background-color:red;'>$error</div>";
+                }
+                return $errorMessages;
+            }
+        } else {
+            return self::$errors[$field] ?? '';
+        }
+    }
+}
