@@ -1,4 +1,28 @@
-# Php-validation-class
-The Validation class is a PHP utility for validating form input data. It offers a set of static methods to validate fields against common rules such as required fields, email format, numeric values, and string length constraints. Designed for ease of use, it is a valuable addition to any PHP project requiring form validation.
+# PHP Validation Class
 
+A simple and lightweight PHP validation class for handling form validation rules easily.
+
+---
+
+## 🚀 Features
+
+- Required field validation
+- Email validation
+- Numeric validation
+- String validation
+- Min / Max length validation
+- Easy rule-based syntax
+- Static usage (no instantiation needed)
+
+---
+
+## 📦 Usage
+
+```php
 use core\validation\Validation;
+
+Validation::make([
+    "email" => "required|email",
+    "name"  => "required|string|min:3|max:50",
+    "age"   => "required|number"
+]);
