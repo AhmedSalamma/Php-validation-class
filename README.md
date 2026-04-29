@@ -2,8 +2,6 @@
 
 A simple and lightweight PHP validation class for handling form validation rules easily.
 
----
-
 ## 🚀 Features
 
 - Required field validation
@@ -14,7 +12,7 @@ A simple and lightweight PHP validation class for handling form validation rules
 - Easy rule-based syntax
 - Static usage (no instantiation needed)
 
----
+
 
 ## 📦 Usage
 
